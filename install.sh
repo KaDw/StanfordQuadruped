@@ -1,7 +1,5 @@
 yes | sudo apt-get install libatlas-base-dev
-yes | pip3 install numpy transforms3d pigpio pyserial
-yes | pip install numpy transforms3d pigpio pyserial
-yes | sudo pip install numpy transforms3d pigpio pyserial
+pip install -r requirements.txt
 
 cd ..
 git clone https://github.com/stanfordroboticsclub/PupperCommand.git
