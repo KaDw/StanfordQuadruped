@@ -3,3 +3,4 @@ transforms3d
 pigpio
 pyserial
 evdev
+PCA9685-driver
