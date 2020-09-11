@@ -1,0 +1,5 @@
+numpy
+transforms3d
+pigpio
+pyserial
+evdev
