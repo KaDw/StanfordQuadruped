@@ -1,6 +1,9 @@
-import pigpio
-from pca9685_driver import Device
+from gpiozero import DigitalOutputDevice
+from pupper.pca9685 import Device
 from pupper.Config import ServoParams, PWMParams
+
+PCA9685_OE_GPIO = 6   # pi1 accesses the local Pi's GPIO
+pwm_enable = DigitalOutputDevice(PCA9685_OE_GPIO, active_high=False)
 
 class HardwareInterface:
     def __init__(self):
@@ -15,6 +18,10 @@ class HardwareInterface:
     def set_actuator_position(self, joint_angle, axis, leg):
         send_servo_command(self.pca9685, self.pwm_params, self.servo_params, joint_angle, axis, leg)
 
+    def deactivate_servos(self):
+        for leg_index in range(4):
+            for axis_index in range(3):
+                self.pca9685.set_pwm(self.pwm_params.channels[axis_index][leg_index], 0)
 
 def pwm_to_duty_cycle(pulsewidth_micros, pwm_params):
     """Converts a pwm signal (measured in microseconds) to a corresponding duty cycle on the gpio pwm pin
@@ -54,8 +61,8 @@ def angle_to_pwm(angle, servo_params, axis_index, leg_index):
         PWM width in microseconds
     """
     angle_deviation = (
-        angle - servo_params.neutral_angles[axis_index, leg_index]
-    ) * servo_params.servo_multipliers[axis_index, leg_index]
+        angle - servo_params.neutral_angles[axis_index][leg_index]
+    ) * servo_params.servo_multipliers[axis_index][leg_index]
     pulse_width_micros = (
         servo_params.neutral_position_pwm
         + servo_params.micros_per_rad * angle_deviation
@@ -70,9 +77,9 @@ def angle_to_duty_cycle(angle, pwm_params, servo_params, axis_index, leg_index):
 
 
 def initialize_pwm(dev, pwm_params):
-    #TODO: enable with OE pin
+    deactivate_servos(dev, pwm_params) # set all pca9685 registers to zero
     dev.set_pwm_frequency(pwm_params.freq)
-
+    activate_servos()
 
 def send_servo_commands(dev, pwm_params, servo_params, joint_angles):
     for leg_index in range(4):
@@ -84,16 +91,19 @@ def send_servo_commands(dev, pwm_params, servo_params, joint_angles):
                 axis_index,
                 leg_index,
             )
-            dev.set_pwm(pwm_params.channels[axis_index, leg_index], duty_cycle)
+            dev.set_pwm(pwm_params.channels[axis_index][leg_index], duty_cycle)
 
 
 def send_servo_command(dev, pwm_params, servo_params, joint_angle, axis, leg):
     duty_cycle = angle_to_duty_cycle(joint_angle, pwm_params, servo_params, axis, leg)
-    dev.set_pwm(pwm_params.channels[axis, leg], duty_cycle)
+    # print(duty_cycle, axis)
+    print(pwm_params.channels[axis][leg])
+    dev.set_pwm(pwm_params.channels[axis][leg], duty_cycle)
 
+def activate_servos():
+    pwm_enable.on()
 
 def deactivate_servos(dev, pwm_params):
-    #TODO: disable with OE pin
     for leg_index in range(4):
         for axis_index in range(3):
-            dev.set_pwm(pwm_params.channels[axis_index, leg_index], 0)
+            dev.set_pwm(pwm_params.channels[axis_index][leg_index], 0)
