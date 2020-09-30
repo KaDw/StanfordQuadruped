@@ -7,6 +7,10 @@ from src.State import State
 from pupper.HardwareInterface import HardwareInterface
 from pupper.Config import Configuration
 from pupper.Kinematics import four_legs_inverse_kinematics
+import atexit
+
+def exit_handler(hardware_interface):
+    hardware_interface.deactivate_servos()
 
 def main(use_imu=False):
     """Main program
@@ -15,6 +19,7 @@ def main(use_imu=False):
     # Create config
     config = Configuration()
     hardware_interface = HardwareInterface()
+    atexit.register(exit_handler, hardware_interface)
 
     # Create imu handle
     if use_imu:
