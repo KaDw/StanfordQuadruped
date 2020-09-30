@@ -1,4 +1,3 @@
-import pigpio
 from pupper.HardwareInterface import HardwareInterface
 from pupper.Config import PWMParams, ServoParams
 import numpy as np
@@ -100,7 +99,7 @@ def calibrate_angle_offset(hardware_interface):
 
                 # Zero out the neutral angle
                 hardware_interface.servo_params.neutral_angle_degrees[axis, leg_index] = 0
-
+                
                 # Move servo to set_point angle
                 hardware_interface.set_actuator_position(
                     degrees_to_radians(set_point),
