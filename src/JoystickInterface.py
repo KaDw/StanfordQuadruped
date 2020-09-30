@@ -1,4 +1,3 @@
-import UDPComms
 import numpy as np
 import time
 from src.State import BehaviorState, State
@@ -40,13 +39,13 @@ class JoystickInterface:
             for event in self.device.read():
                 if event.type == ecodes.EV_ABS:
                     if event.code == ecodes.ABS_X:
-                        self.ls[0] = (event.value - 32767.0) / 32768.0
+                        self.ls[0] = ((event.value - 32767.0) / 32768.0) + 1
                     elif event.code == ecodes.ABS_Y:
-                        self.ls[1] = (event.value - 32767.0) / 32768.0
+                        self.ls[1] = ((event.value - 32767.0) / 32768.0) + 1
                     elif event.code == ecodes.ABS_RX:
-                        self.rs[0] = (event.value - 32767.0) / 32768.0
+                        self.rs[0] = ((event.value - 32767.0) / 32768.0) + 1
                     elif event.code == ecodes.ABS_RY:
-                        self.rs[1] = (event.value - 32767.0) / 32768.0
+                        self.rs[1] = ((event.value - 32767.0) / 32768.0) + 1
                     elif event.code == 16:
                         self.dpad_x = event.value
                     elif event.code == 17:
