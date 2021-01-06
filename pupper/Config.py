@@ -5,7 +5,7 @@ from enum import Enum
 # TODO: put these somewhere else
 class PWMParams:
     def __init__(self):
-        self.channels = [[0, 1, 2 ,3], [4, 5, 6, 7], [8, 9, 10, 11]]
+        self.channels = [[0, 3, 6 ,9], [1, 4, 7, 10], [2, 5, 8, 11]]
         self.resolution = 4096
         self.freq = 250
 
