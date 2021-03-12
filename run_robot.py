@@ -18,8 +18,10 @@ def main(use_imu=False):
 
     # Create config
     config = Configuration()
-    hardware_interface = HardwareInterface()
-    atexit.register(exit_handler, hardware_interface)
+    try:
+        hardware_interface = HardwareInterface()
+    except Exception as e:
+        print('HardwareInterface exception:', e)
 
     # Create imu handle
     if use_imu:
@@ -27,13 +29,19 @@ def main(use_imu=False):
         imu.flush_buffer()
 
     # Create controller and user input handles
-    controller = Controller(
-        config,
-        four_legs_inverse_kinematics,
-    )
+    try:
+        controller = Controller(
+            config,
+            four_legs_inverse_kinematics,
+        )
+    except Exception as e:
+        print('Controller exception:', e)
     state = State()
     print("Creating joystick listener...")
-    joystick_interface = JoystickInterface(config)
+    try:
+        joystick_interface = JoystickInterface(config)
+    except Exception as e:
+        print('JoystickInterface exception:', e)
     print("Done.")
 
     last_loop = time.time()

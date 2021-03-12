@@ -1,0 +1,21 @@
+#!/bin/sh
+PIDFILE=/var/run/run_robot.pid
+LOGFILE=/var/log/run_robot.log
+
+PROJECT_DIR=/home/pi/StanfordQuadruped/
+
+case $1 in
+        start)
+                cd ${PROJECT_DIR}
+                rm ${LOGFILE} # optional, remove old logfile
+                python3 /home/pi/StanfordQuadruped/run_robot.py >> ${LOGFILE} 2>&1 | at now
+                echo $! > ${PIDFILE} # save spawned backround process' PID to PIDFILE
+                echo "run_robot started with PID:"
+                cat ${PIDFILE};;
+        stop)
+                kill `cat ${PIDFILE}`
+                rm ${PIDFILE};;
+        *)
+                echo "usage: $0 {start|stop}" ;;
+esac
+exit 0
