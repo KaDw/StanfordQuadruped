@@ -9,7 +9,7 @@ from evdev import list_devices, ecodes
 
 class JoystickInterface:
     def __init__(
-        self, config, udp_port=8830, udp_publisher_port = 8840,
+        self, config,
     ):
         self.config = config
         self.previous_gait_toggle = 0
@@ -18,7 +18,7 @@ class JoystickInterface:
         self.previous_activate_toggle = 0
 
         self.message_rate = 50
-        self.device = evdev.InputDevice(list_devices()[0])
+        self.device = evdev.InputDevice('/dev/input/event0')
 
         print(self.device)
 
@@ -39,13 +39,13 @@ class JoystickInterface:
             for event in self.device.read():
                 if event.type == ecodes.EV_ABS:
                     if event.code == ecodes.ABS_X:
-                        self.ls[0] = ((event.value - 32767.0) / 32768.0) + 1
+                        self.ls[0] = ((event.value - 32767.0) / 32768.0)
                     elif event.code == ecodes.ABS_Y:
-                        self.ls[1] = ((event.value - 32767.0) / 32768.0) + 1
-                    elif event.code == ecodes.ABS_RX:
-                        self.rs[0] = ((event.value - 32767.0) / 32768.0) + 1
-                    elif event.code == ecodes.ABS_RY:
-                        self.rs[1] = ((event.value - 32767.0) / 32768.0) + 1
+                        self.ls[1] = ((event.value - 32767.0) / 32768.0)
+                    elif event.code == ecodes.ABS_Z:
+                        self.rs[0] = ((event.value - 32767.0) / 32768.0)
+                    elif event.code == ecodes.ABS_RZ:
+                        self.rs[1] = ((event.value - 32767.0) / 32768.0)
                     elif event.code == 16:
                         self.dpad_x = event.value
                     elif event.code == 17:
@@ -72,9 +72,8 @@ class JoystickInterface:
         assert(self.ls[1] >= -1.0 and self.ls[1] <= 1.0)
         assert(self.rs[0] >= -1.0 and self.rs[0] <= 1.0)
         assert(self.rs[1] >= -1.0 and self.rs[1] <= 1.0)
-
+    
         command = Command()
-        
         ####### Handle discrete commands ########
         # Check if requesting a state transition to trotting, or from trotting to resting
         gait_toggle = self.r1
